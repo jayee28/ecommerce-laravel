@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\CmsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,10 @@ Route::prefix('/admin')->group(function(){
         Route::match(['get','post'],'update-details',[AdminController::class,'updateDetails']);
         Route::post('check-current-password',[AdminController::class,'checkCurrentPassword']);
         Route::get('logout',[AdminController::class,'logout']);
+
+        //Display CMS pages (CRUD - READ)
+        Route::get('cms-pages',[CmsController::class,'index']);
+        Route::post('update-cms-page-status',[CmsController::class,'update']);
     });
 
 });

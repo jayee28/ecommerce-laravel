@@ -98,9 +98,9 @@
             <a href="#" class="nav-link">
               <i class="nav-icon fas fa-copy"></i>
               <p>
-                Pages Management
-                <i class="fas fa-angle-left right"></i>
-                <span class="badge badge-info right">6</span>
+                CMS Pages
+                <!-- <i class="fas fa-angle-left right"></i>
+                <span class="badge badge-info right">6</span> -->
               </p>
             </a>
             <ul class="nav nav-treeview">
