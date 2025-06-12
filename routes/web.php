@@ -31,7 +31,8 @@ Route::prefix('/admin')->group(function(){
         //Display CMS pages (CRUD - READ)
         Route::get('cms-pages',[CmsController::class,'index']);
         Route::post('update-cms-page-status',[CmsController::class,'update']);
-        Route::match(['get','post'],'add-edit-cms-page',[CmsController::class,'edit']);
+        Route::match(['get','post'],'add-edit-cms-page/{id?}',[CmsController::class,'edit']);
+        Route::get('delete-cms-page/{id?}',[CmsController::class,'destroy']);
     });
 
 });

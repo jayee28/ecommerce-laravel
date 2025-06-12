@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CmsPage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CmsController extends Controller
 {
@@ -13,6 +14,7 @@ class CmsController extends Controller
      */
     public function index()
     {
+        Session::put('page','cms-pages');
         $cms_pages = CmsPage::get()->toArray();
         //dd($cms_pages);
         return view('admin.pages.cms_pages')->with(compact('cms_pages'));
@@ -47,12 +49,15 @@ class CmsController extends Controller
      */
     public function edit(Request $request,$id=null)
     {
+        Session::put('page','cms-pages');
         if($id==""){
             $title = "Add CMS Page";
             $cmspage = new CmsPage();
             $message = "CMS Page added successfully.";
         }else{
             $title = "Edit CMS Page";
+            $cmspage = CmsPage::find($id);
+            $message = "CMS Page updated successfully.";
         }
 
         if($request->isMethod('POST')){
@@ -85,7 +90,7 @@ class CmsController extends Controller
             return redirect('admin/cms-pages')->with('success_message',$message);
         }
 
-        return view('admin.pages.add_edit_cmspage')->with(compact('title'));
+        return view('admin.pages.add_edit_cmspage')->with(compact('title','cmspage'));
     }
 
     /**
@@ -110,8 +115,10 @@ class CmsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(CmsPage $cmsPage)
+    public function destroy($id)
     {
-        //
+        //Delete CMS Page
+        CmsPage::where('id',$id)->delete();
+        return redirect()->back()->with('success_message','CMS page deleted successfully.');
     }
 }
