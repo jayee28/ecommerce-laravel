@@ -49,6 +49,16 @@ class AdminController extends Controller
             $this->validate($request,$rules,$customMessages);
 
             if (Auth::guard('admin')->attempt(['email' => $data['email'],'password' => $data['password']])){
+                
+                //Remember Admin email and password with cookies
+                if(isset($data['remember']) && !empty($data['remember'])){
+                    setcookie('email',$data['email'],time()+3600);//for 1 hr
+                    setcookie('password',$data['password'],time()+3600);//for 1 hr
+                }else{
+                    setcookie('email','');
+                    setcookie('password','');
+                }
+                
                 return redirect('admin/dashboard');
             }else{
                 return redirect()->back()->with('error_message','Login failed.');
