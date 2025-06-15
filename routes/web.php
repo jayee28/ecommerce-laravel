@@ -33,6 +33,13 @@ Route::prefix('/admin')->group(function(){
         Route::post('update-cms-page-status',[CmsController::class,'update']);
         Route::match(['get','post'],'add-edit-cms-page/{id?}',[CmsController::class,'edit']);
         Route::get('delete-cms-page/{id?}',[CmsController::class,'destroy']);
+
+        //subadmins
+        Route::get('subadmins',[AdminController::class,'subadmins']);
+        Route::post('update-subadmin-status',[AdminController::class,'updateSubadminStatus']);
+        Route::get('delete-subadmin/{id?}',[AdminController::class,'deleteSubadmin']);
+        Route::match(['get','post'],'add-edit-subadmin/{id?}',[AdminController::class,'addEditSubadmin']);
+        Route::match(['get','post'],'update-role/{id}',[AdminController::class,'updateRole']);
     });
 
 });

@@ -95,4 +95,34 @@ $(document).ready(function () {
         });
     });
 
+    //Update sub admin status
+    $(document).on('click', '.updateSubadminStatus', function () {
+        var icon = $(this).children("i");
+        var currentStatus = icon.attr('data-status');
+        var subadminId = $(this).attr('data-subadmin-id');
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: "POST",
+            url: '/admin/update-subadmin-status',
+            data: {
+                status: currentStatus,
+                subadmin_id: subadminId
+            },
+            success: function (response) {
+                var element = $('#subadmin-' + response.subadmin_id);
+                if (response.status == 0) {
+                    element.html("<i class='fas fa-toggle-off' style='color:grey' data-status='Inactive'></i>");
+                } else {
+                    element.html("<i class='fas fa-toggle-on' style='color:#3f6ed3' data-status='Active'></i>");
+                }
+            },
+            error: function () {
+                alert("Error updating status");
+            }
+        });
+    });
+
 });

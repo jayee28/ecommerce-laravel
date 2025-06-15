@@ -28,7 +28,7 @@
         <div class="alert alert-danger">
             <ul>
                 @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
+                  <li>{{ $error }}</li>
                 @endforeach
             </ul>
         </div>
@@ -39,7 +39,7 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>Error : </strong> {{ Session::get('error_message') }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         @endif
@@ -48,7 +48,7 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>Error : </strong> {{ Session::get('error_email') }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         @endif
@@ -57,7 +57,7 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <strong>Error : </strong> {{ Session::get('error_password') }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+                  <span aria-hidden="true">&times;</span>
                 </button>
             </div>
         @endif

@@ -59,28 +59,36 @@
                                         <td>{{ $page['url'] }}</td>
                                         <td>{{ date("F j, Y, g:i a", strtotime($page['created_at'])) }}</td>
                                         <td>
-                                            <!-- Add CMS Page -->
-                                            @if($page['status'] == 1)
-                                            <a class='updateCmsPageStatus' id="page-{{ $page['id'] }}"
-                                                data-page-id="{{ $page['id'] }}" style='color:#3f6ed3' href="javascript:void(0)">
-                                                <i class="fas fa-toggle-on" data-status="Active"></i>
-                                            </a>
-                                            @else
-                                            <a class='updateCmsPageStatus' id="page-{{ $page['id'] }}"
-                                                data-page-id="{{ $page['id'] }}" style="color:grey" href="javascript:void(0)">
-                                                <i class="fas fa-toggle-off" data-status="Inactive"></i>
-                                            </a>
-                                            @endif
+                                            @if($pagesModule['edit_access'] == 1 || $pagesModule['full_access'] == 1)
+                                                <!-- Add CMS Page status dynamically -->
+                                                @if($page['status'] == 1)
+                                                <a class='updateCmsPageStatus' id="page-{{ $page['id'] }}"
+                                                    data-page-id="{{ $page['id'] }}" style='color:#3f6ed3' href="javascript:void(0)">
+                                                    <i class="fas fa-toggle-on" data-status="Active"></i>
+                                                </a>
+                                                @else
+                                                <a class='updateCmsPageStatus' id="page-{{ $page['id'] }}"
+                                                    data-page-id="{{ $page['id'] }}" style="color:grey" href="javascript:void(0)">
+                                                    <i class="fas fa-toggle-off" data-status="Inactive"></i>
+                                                </a>
+                                                @endif
                                             &nbsp;&nbsp;
-                                            <!-- Edit CMS Page -->
-                                            <a href="{{ url('admin/add-edit-cms-page/'.$page['id']) }}"><i class='fas fa-edit' style='color:#3f6ed3'></i></a>
-                                            &nbsp; &nbsp;
-                                            <!-- Delete CMS Page -->
-                                            <!-- <a href="{{ url('admin/delete-cms-page/'.$page['id']) }}" class="confirmDelete" 
-                                            name="CMS Page" title="Delete CMS PAge"><i class='fas fa-trash' style='color:#3f6ed3'></i></a> -->
-                                            <a class="confirmDelete" name="CMS Page" title="Delete CMS Page" 
-                                            href="javascript:void(0)" record="cms-page" recordid="{{ $page['id'] }}"
-                                            ><i class='fas fa-trash' style='color:#3f6ed3'></i></a>
+                                            @endif
+
+                                            @if($pagesModule['edit_access'] == 1 || $pagesModule['full_access'] == 1)
+                                                <!-- Edit CMS Page -->
+                                                <a href="{{ url('admin/add-edit-cms-page/'.$page['id']) }}"><i class='fas fa-edit' style='color:#3f6ed3'></i></a>
+                                                &nbsp; &nbsp;
+                                            @endif
+
+                                            @if($pagesModule['full_access'] == 1)
+                                                <!-- Delete CMS Page -->
+                                                <!-- <a href="{{ url('admin/delete-cms-page/'.$page['id']) }}" class="confirmDelete" 
+                                                name="CMS Page" title="Delete CMS PAge"><i class='fas fa-trash' style='color:#3f6ed3'></i></a> -->
+                                                <a class="confirmDelete" name="CMS Page" title="Delete CMS Page" 
+                                                href="javascript:void(0)" record="cms-page" recordid="{{ $page['id'] }}"
+                                                ><i class='fas fa-trash' style='color:#3f6ed3'></i></a>
+                                            @endif
                                         </td>
 
                                     </tr>

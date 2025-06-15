@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Admin;
+use App\Models\AdminsRole;
 use Illuminate\Support\Facades\Session;
 
 
@@ -153,4 +154,181 @@ class AdminController extends Controller
         }
         return view('admin.update_details');
     }
+
+    public function subadmins(){
+        if(Auth::guard('admin')->user()->type == 'admin'){
+            Session::put('page','subadmins');
+            $subadmins = Admin::where('type','subadmin')->get();
+            return view('admin.subadmins.subadmins')->with(compact('subadmins'));
+        }else{
+            $message = "Sorry,this feature is not allowed for you.";
+            return redirect('admin/dashboard')->with('error_message',$message);
+        }
+        
+    }
+
+    public function updateSubadminStatus(Request $request){
+        Session::put('page','subadmins');
+        if ($request->ajax()) {
+            $data = $request->all();
+
+            $newStatus = ($data['status'] == 'Active') ? 0 : 1;
+
+            Admin::where('id', $data['subadmin_id'])->update(['status' => $newStatus]);
+
+            return response()->json([
+                'status' => $newStatus,
+                'subadmin_id' => $data['subadmin_id']
+            ]);
+        }
+    }
+
+    public function deleteSubadmin($id)
+    {
+        Session::put('page','subadmins');
+        //Delete subadmin
+        Admin::where('id',$id)->delete();
+        return redirect()->back()->with('success_message','Subadmin deleted successfully.');
+    }
+
+    public function addEditSubadmin(Request $request,$id=null)
+    {
+        Session::put('page','subadmins');
+        if($id==""){
+            $title = "Add Subadmin";
+            $subadmindata = new Admin();
+            $message = "Subadmin added successfully.";
+        }else{
+            $title = "Edit Subadmin";
+            $subadmindata = Admin::find($id);
+            $message = "subadmin updated successfully.";
+        }
+
+        if($request->isMethod('POST')){
+            $data = $request->all();
+            // echo "<pre>";print_r($data);die;
+
+            if($id==""){
+                $subadminCount = Admin::where('email',$data['email'])->count();
+                if($subadminCount>0){
+                    return redirect()->back()->with('error_message','Subadmin already exist.');
+                }
+            }
+
+            //Subadmin Validation
+            $rules = [
+                'name'   => 'required',
+                'mobile' => ['required', 'regex:/^[6-9]\d{9}$/'],
+                'image'  => 'image|mimes:jpeg,jpg,png'
+            ];
+
+            $customMessages = [
+                'name.required'   => 'Name is required',
+                'mobile.required' => 'Mobile number is required',
+                'mobile.regex'    => 'Enter a valid 10-digit mobile number',
+                'image.image'     => 'Valid image is required',
+                'image.mimes'       => 'Image must be a file of type: jpeg, jpg, png'
+            ];
+
+            $this->validate($request,$rules,$customMessages);
+
+            //Upload subadmin image
+            if($request->has('image')){
+                $file = $request->file('image');
+                $extension = $file->getClientOriginalExtension();
+
+                $imageName = time().'.'.$extension;
+                $path = 'admin/images/photos/';
+                $file->move($path,$imageName);
+            }else if(!empty($data['current_image'])){
+                $imageName = $data['current_image'];
+            }else{
+                $imageName = "";
+            }
+
+            $subadmindata->image  = $imageName;
+            $subadmindata->name   = $data['name'];
+            $subadmindata->mobile = $data['mobile'];
+            if($id==""){
+                $subadmindata->email = $data['email'];
+                $subadmindata->type = 'subadmin';
+                $subadmindata->status = isset($data['status']) ? $data['status'] : 1;
+                
+            }
+            if($data['password'] != ""){
+                $subadmindata->password = bcrypt($data['password']);
+            }
+            $subadmindata->save();
+            return redirect('admin/subadmins')->with('success_message',$message);
+          
+        }
+
+        return view('admin.subadmins.add_edit_subadmin')->with(compact('title','subadmindata'));
+    }
+
+    public function updateRole($id,Request $request){
+        
+        if($request->isMethod('post')){
+            $data = $request->all();
+            // echo "<pre>";print_r($data);die;
+
+            // Delete all earlier roles
+            AdminsRole::where('subadmin_id',$id)->delete();
+
+            // Add new roles dynamically
+            foreach($data as $key => $value){
+                if(isset($value['view'])){
+                    $view = $value['view'];
+                }else{
+                    $view = 0;
+                }
+                if(isset($value['edit'])){
+                    $edit = $value['edit'];
+                }else{
+                    $edit = 0;
+                }
+                if(isset($value['full'])){
+                    $full = $value['full'];
+                }else{
+                    $full = 0;
+                }
+            }
+
+            // Add new roles
+            if(isset($data['cms_pages']['view'])){
+                $cms_pages_view = $data['cms_pages']['view'];
+            }else{
+                $cms_pages_view = 0;
+            }
+
+            if(isset($data['cms_pages']['edit'])){
+                $cms_pages_edit = $data['cms_pages']['edit'];
+            }else{
+                $cms_pages_edit = 0;
+            }
+
+            if(isset($data['cms_pages']['full'])){
+                $cms_pages_full = $data['cms_pages']['full'];
+            }else{
+                $cms_pages_full = 0;
+            }
+            $role = new AdminsRole();
+            $role->subadmin_id = $id;
+            $role->module      = $key;
+            $role->view_access      = $view;
+            $role->edit_access      = $edit;
+            $role->full_access      = $full;
+            $role->save();
+
+            $message = "Subadmin Roles Updated successfully.";
+            return redirect()->back()->with('success_message',$message);
+        }
+
+        $subadminRoles = AdminsRole::where('subadmin_id',$id)->get()->toArray();
+        $subadminDetails = Admin::where('id',$id)->first()->toArray();
+        $title = "Update ".$subadminDetails['name']." (subadmin) Roles/Permissions";
+        // dd($subadminRoles);
+        return view('admin.subadmins.update_roles')->with(compact('title','id','subadminRoles'));
+    }
+
 }
